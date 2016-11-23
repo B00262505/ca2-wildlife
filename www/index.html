@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
+        <meta http-equiv="Content-Security-Policy" content=" script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <title>CA2 Wildlife</title>
+
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.js"></script>
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.css" />
+        <link rel="stylesheet" href="css/styles.css"/>
+
+    </head>
+    <body>
+    <div data-role="page" id="home-page">
+
+        <div data-role="header" data-theme="b">
+            <h1>My Sightings</h1>
+            <div data-role="navbar" data-iconpos="bottom">
+                <ul>
+                    <li><a href="#" data-icon="grid" class="ui-btn-active"></a></li>
+                    <li><a href="#newsighting-page" data-icon="camera" data-transition="flip"></a></li>
+                    <li><a href="#info-page" data-icon="info" data-transition="flip"></a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+
+        <div data-role="content">
+            <div data-role="tabs" id="tabs">
+                <div data-role="navbar" data-theme="b">
+                    <ul>
+                        <li><a href="#one" data-ajax="false">List</a></li>
+                        <li><a href="#two" data-ajax="false" id="map-tab">Map</a></li>
+                    </ul>
+                </div>
+                <div id="one" class="ui-body-d ui-content">
+                    <ul id="posts-list">
+                        <li>
+                            <h2>There are no images to display.</h2>
+                            <img src="img/noimage.jpg" class="half-width-height"/>
+                            <p>Visit the sightings tab to take your first picture.</p>
+                            <hr/>
+                        </li>
+                    </ul>
+                </div>
+                <div id="two">
+                    <div id="map"></div>
+                </div>
+            </div>
+
+
+        </div><!-- /content -->
+    </div><!-- /page -->
+    <!--END HOME PAGE-->
+
+    <!--NEW SIGHTING PAGE-->
+    <div data-role="page" id="newsighting-page">
+
+        <div data-role="header" data-theme="b">
+            <h1>Add Sighting</h1>
+            <div data-role="navbar" data-iconpos="bottom">
+                <ul>
+                    <li><a href="#home-page" data-icon="grid" data-transition="flip"></a></li>
+                    <li><a href="#" data-icon="camera" class="ui-btn-active"></a></li>
+                    <li><a href="#info-page" data-icon="info" data-transition="flip"></a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+
+        <div data-role="content">
+            <form>
+                <a id="new-image-button"><img id="new-image-image" src="img/noimage.jpg" class="half-width-height"></a>
+                <hr/>
+                <input type="text" placeholder="Enter a title" id="new-title"/>
+                <textarea rows="5" placeholder="Enter a brief description" id="new-description"></textarea>
+                <label for="new-gps-checkbox">Include GPS location<input id="new-gps-checkbox" type="checkbox"/></label>
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <legend>Species:</legend>
+                    <input type="radio" name="new-species-input" id="new-mammal" value="mammal" checked="checked">
+                    <label for="new-mammal">Mammal</label>
+                    <input type="radio" name="new-species-input" id="new-bird" value="bird">
+                    <label for="new-bird">Bird</label>
+                    <input type="radio" name="new-species-input" id="new-fish" value="fish">
+                    <label for="new-fish">Fish</label>
+                    <input type="radio" name="new-species-input" id="new-reptile" value="reptile">
+                    <label for="new-reptile">Reptile</label>
+                </fieldset>
+
+                <a class="ui-btn ui-btn-inline" id="new-save-form-button">Save</a>
+                <a class="ui-btn ui-btn-inline" id="new-clear-form-button">Clear</a>
+            </form>
+        </div><!-- /content -->
+
+    </div><!-- /page -->
+    <!--END NEW SIGHTING PAGE-->
+
+    <!--INFO PAGE-->
+    <div data-role="page" id="info-page">
+
+        <div data-role="header" data-theme="b">
+            <h1>Info</h1>
+            <div data-role="navbar" data-iconpos="bottom">
+                <ul>
+                    <li><a href="#home-page" data-icon="grid" data-transition="flip"></a></li>
+                    <li><a href="#newsighting-page" data-icon="camera" data-transition="flip"></a></li>
+                    <li><a href="#" data-icon="info" class="ui-btn-active"></a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+
+        <div data-role="content">
+            <h2>New Sighting?</h2>
+            <p>Document your sighting by snapping a photograph using your devices camera.</p>
+            <p>Add a description, title and tag the appropriate species.</p>
+            <p>Enable the GPS location to view where the sighting was at a later date.</p>
+
+            <h2>Your Sightings</h2>
+            <p>Sort your sightings by their species.</p>
+            <p>View all your sightings on a map.</p>
+            <p>View your sightings sorted by when they were.</p>
+
+            <h2>Wildlife Sighting Etiquette</h2> <!--Source http://www.env.gov.yk.ca/animals-habitat/tips.php -->
+            <ul>
+                <li>Be quiet.</li>
+                <li>Look for animal signs, tracks, trails that may give you clues on where you might wait to view them.</li>
+                <li>Stop, look for several minutes, find a comfortable spot and sit for a while.</li>
+                <li>Sit with the sun to your back, in a place where there is cover for wildlife.</li>
+                <li>Watch for movement, colours, and shapes.</li>
+                <li>Stay on established trails when you find one.</li>
+                <li>Listen many species are heard before they are seen.</li>
+            </ul>
+        </div><!-- /content -->
+
+    </div><!-- /page -->
+    <!--END INFO PAGE-->
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3g6HJM890augrFWT-ULqTPjrxMKhZWzw&callback=initMap"
+        async defer></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script src="js/scripts.js"></script>
+
+    </body>
+</html>
