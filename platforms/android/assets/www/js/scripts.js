@@ -54,14 +54,19 @@ $().ready(function(){
             //set no location
             lat = null;
             lng = null;
-            saveSighting(title,description,species,timeDate,lat,lng);
+            if (validateInputForm){
+                saveSighting(title,description,species,timeDate,lat,lng);
+            }
+
         }
 
         //save then clear - clear handled on save success
         function geoSuccess(position){
             lat = (position.coords.latitude);
             lng = (position.coords.longitude);
-            saveSighting(title,description,species,timeDate,lat,lng);
+            if (validateInputForm){
+                saveSighting(title,description,species,timeDate,lat,lng);
+            }
         }
 
         function geoError(){
@@ -72,6 +77,15 @@ $().ready(function(){
 
 });
 
+function validateInputForm(){
+    var title = $("#new-title").val();
+    var description = $("#new-description").val();
+    var gpsEnabled = $("#new-gps-checkbox").is(":checked");
+    var species = $("input[name='new-species-input']:checked").val();
+    var timeDate = new Date();
+
+
+}
 
 document.addEventListener('deviceready', function() {
 
@@ -213,7 +227,6 @@ function saveSighting(title,description,species,timeDate,lat,lng){
     if (indexedDBsupport){
         var transaction = db.transaction(["posts"],"readwrite");
         var store = transaction.objectStore("posts");
-        console.log("saving....");
         var post = {
             title:title,
             description:description,
@@ -466,10 +479,6 @@ function deletePost(postKey){
             tx.executeSql('DELETE FROM posts2 WHERE id = ?', [postKey], function(){getPostsList()}, function(error){alert(error)});
         });
     }
-}
-
-function validateInputs(){
-//akjsd
 }
 
 function clearInputForm(){
