@@ -24,4 +24,8 @@ ul {
   #two img {
     max-width: none; }
 
+.icon-bar {
+  width: 25px;
+  height: 25px; }
+
 /*# sourceMappingURL=styles.css.map */

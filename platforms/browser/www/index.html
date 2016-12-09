@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-
-        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
+<!---->
         <meta http-equiv="Content-Security-Policy" content=" script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <title>CA2 Wildlife</title>
-
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <title>Blank App</title>
         <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.js"></script>
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.css" />
-        <link rel="stylesheet" href="css/styles.css"/>
 
+        <script type="text/javascript" src="cordova.js"></script>
+        <script src="js/scripts.js"></script>
+        <link rel="stylesheet" href="css/styles.css"/>
     </head>
-    <body>
+<body>
     <div data-role="page" id="home-page">
 
         <div data-role="header" data-theme="b">
-            <h1>My Sightings</h1>
+            <h1>My Sightings </h1>
             <div data-role="navbar" data-iconpos="bottom">
                 <ul>
                     <li><a href="#" data-icon="grid" class="ui-btn-active"></a></li>
@@ -56,6 +55,28 @@
         </div><!-- /content -->
     </div><!-- /page -->
     <!--END HOME PAGE-->
+
+    <!--Dialog for SHARING-->
+    <div data-role="page" id="sharing-dialog">
+
+        <div data-role="header" data-theme="b">
+            <h1> Select a contact.</h1>
+        </div><!-- /header -->
+
+        <div data-role="content">
+            <form>
+                <input data-type="search" id="contact-search-input">
+            </form>
+            <div data-role="controlgroup" data-filter="true" data-input="#contact-search-input" id="contact-buttons">
+                <a href="#" class="ui-btn ui-shadow ui-corner-all">Please wait..</a>
+
+            </div>
+        </div><!-- /content -->
+
+    </div><!-- /page -->
+
+
+
 
     <!--NEW SIGHTING PAGE-->
     <div data-role="page" id="newsighting-page">
@@ -140,8 +161,7 @@
 
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3g6HJM890augrFWT-ULqTPjrxMKhZWzw&callback=initMap"
         async defer></script>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script src="js/scripts.js"></script>
+
 
     </body>
 </html>

@@ -5,6 +5,7 @@ var lat,lng,imgBase64;
 
 var db = null;
 var indexedDBsupport;
+var emailSupport = true;
 
 var posts=[]; //array of posts read from database
 
@@ -14,16 +15,16 @@ $().ready(function(){
         var image = $("#new-image-image");
         image.attr("src","gear.gif");
         //picture success set #new-image-image src as picture that was taken
-        navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
+        navigator.camera.getPicture(camSuccess, camFail, { quality: 50,
             destinationType: Camera.DestinationType.DATA_URL
         });
     });
-    function onSuccess(imageData) {
+    function camSuccess(imageData) {
         var image = document.getElementById('new-image-image');
         image.src = "data:image/jpeg;base64," + imageData;
         imgBase64 = imageData; //Save global variable accessable by save function
     }
-    function onFail(message) {
+    function camFail(message) {
         alert('Failed because: ' + message);
     }
     $("#new-clear-form-button").bind("click",function(){
@@ -61,6 +62,7 @@ $().ready(function(){
     function geoSuccess(position){
         lat = (position.coords.latitude);
         lng = (position.coords.longitude);
+        alert(lat,lng);
     }
 
     function geoError(position){
@@ -69,8 +71,9 @@ $().ready(function(){
     }
 });
 
-//asdasd
+
 document.addEventListener('deviceready', function() {
+
     if("indexedDB" in window) {
         console.log("indexedDB supported.");
         indexedDBsupport = true;
@@ -97,6 +100,7 @@ document.addEventListener('deviceready', function() {
             db = e.target.result;
 
             getPostsList();
+
         };
 
         openRequest.onerror = function(e) {
@@ -105,8 +109,39 @@ document.addEventListener('deviceready', function() {
         }
     }
 
-
+    checkConnection();
 });
+
+function addMarkers(){
+    if (posts.length > 0){
+        for (var i=0; i<posts.length; i++){
+            try {
+                (function(j){
+                    var latlng = {lat: posts[j].lat, lng: posts[j].lng};
+                    var marker = new google.maps.Marker({
+                        position: latlng,
+                        map: map,
+                        clickable: true,
+                        title: posts[j].title
+                    });
+                    marker.info = new google.maps.InfoWindow({
+                        content: "<div id='marker-content'>"+
+                        "<p>"+posts[j].timeDate.toLocaleString() + "</p>" +
+                        "<img src='data:image/jpeg;base64," +posts[j].img+"' class='half-width-height'/>" +
+                        "<p>"+posts[j].description +"</p>"
+                    });
+                    google.maps.event.addListener(marker, "click",function(){
+                        marker.info.open(map,marker);
+                    });
+
+                })(i);
+            }catch (error){
+                alert(error)
+            }
+
+        }
+    }
+}
 
 var map;
 function initMap(){
@@ -129,7 +164,6 @@ function saveSighting(title,description,species,timeDate,lat,lng){
         lng:lng,
         img:imgBase64
     };
-    console.log(post.timeDate);
     var request = store.add(post);
     request.onerror = function(e) {
         console.log("Error",e.target.error.name);
@@ -159,19 +193,25 @@ function getPostsList(){
     db.transaction(["posts"],"readonly").objectStore("posts").openCursor().onsuccess = function(e){
         var cursor = e.target.result;
         if (cursor){
-            var post = {
-                title:cursor.value["title"],
-                description:cursor.value["description"],
-                species:cursor.value["species"],
-                timeDate:cursor.value["timeDate"],
-                lat:cursor.value["lat"],
-                lng:cursor.value["lng"],
-                img:cursor.value["img"]
-            };
-            console.log(post.title);
-            posts.push(post);
-            cursor.continue();
+            try {
+                var post = {
+                    id:cursor.key,
+                    title:cursor.value["title"],
+                    description:cursor.value["description"],
+                    species:cursor.value["species"],
+                    timeDate:cursor.value["timeDate"],
+                    lat:cursor.value["lat"],
+                    lng:cursor.value["lng"],
+                    img:cursor.value["img"]
+                };
+                posts.push(post);
+                cursor.continue();
+            } catch (error){
+                alert(error)
+            }
+
         }
+        addMarkers();
         populatePosts();
     };
 }
@@ -193,22 +233,114 @@ function populatePosts(){
                 speciesImage = "fish.png";
                 break;
         }
+
         html += "<li><h2><img class='species-icon' src='img/"+ speciesImage+"'/>"+posts[i].title+"</h2>";
         html += "<p>"+posts[i].timeDate.toLocaleString() + "</p>";
         html += "<img src='data:image/jpeg;base64," +posts[i].img+"' class='half-width-height'/>";
-        html += "<p>"+posts[i].description +"</p><hr/></li>";
+        html += "<p>"+posts[i].description +" lat: "+posts[i].lat+" lng: "+posts[i].lng +"</p>" +
+            "<a class='ui-btn ui-btn-inline sharing-button' id='"+ posts[i].id +"-share'><img class='icon-bar' src='img/share.png'/></a>" +
+            "<a class='ui-btn ui-btn-inline ' id='"+ posts[i].id +"-upload'><img class='icon-bar' src='img/upload.png'/></a>" +
+            "<a class='ui-btn ui-btn-inline ' id='"+ posts[i].id +"-delete'><img class='icon-bar' src='img/delete.png'/></a>" +
+            "<hr/></li>";
     }
     $("#posts-list").html(html);
+    bindPostsButton();
+}
 
+function bindPostsButton(){
+    for (var i=0;i<posts.length;i++){
+        $("#"+posts[i].id+"-share").bind("click",function(){
+            sharePost(+this.id[0]);
+        });
+        $("#"+posts[i].id+"-upload").bind("click",function(){
+            uploadPost(+this.id[0])
+        });
+        $("#"+posts[i].id+"-delete").bind("click",function(){
+            deletePost(+this.id[0])
+        });
+    }
+}
+
+var contactsList =[];
+function sharePost(postKey){
+    var fields = ["*"];
+    var options = {multiple: true};
+    navigator.contacts.find(fields,function(contacts){
+        for (var i = 0; i <contacts.length; i++){
+            if (contacts[i].emails != null){ //only contacts with email
+                if (contacts[i].name.formatted != undefined){ //only contacts with name
+                    contactsList.push(contacts[i]);
+                }
+            }
+        }
+        var html = "";
+        for (var i=0;i<contactsList.length;i++){
+            html += "<a href='#' id='email-"+ i +"' class='ui-btn ui-shadow ui-corner-all'>"+contactsList[i].name.formatted+"</a>"
+        }
+
+        $("#contact-buttons").html(html);
+
+
+    },function (error){
+        console.log(error);
+    },options);
+    $.mobile.changePage( "#sharing-dialog", { role: "dialog" } );
 
 }
 
-function validateInputs(){
 
+function bindEmailButton(postKey){
+    for (var i=0; i<contactsList.length;i++){
+        $("#email-"+i).bind("click",function(){
+            var i = this.id.split("-");
+            i = i[1];
+
+        });
+    }
+}
+
+
+function uploadPost(postKey){
+    if (checkConnection() == "Online"){
+        //Push to server
+    } else {
+        alert("Please check your connection.");
+    }
+}
+
+
+function deletePost(postKey){
+    var request = db.transaction("posts", "readwrite").objectStore("posts").delete(+postKey);
+    request.onerror = function(e) {
+        console.log("Error",e.target.error.name);
+    };
+    request.onsuccess = function(e) {
+        console.log("Deleted from database");
+        getPostsList(); //update list
+    }
+}
+
+function validateInputs(){
+//akjsd
 }
 
 function clearInputForm(){
     $("#new-title").val("");
     $("#new-description").val("");
+}
+
+function checkConnection() {
+    var networkState = navigator.connection.type;
+    var states = {};
+    states[Connection.UNKNOWN]  = 'Online';
+    states[Connection.ETHERNET] = 'Online';
+    states[Connection.WIFI]     = 'Online';
+    states[Connection.CELL_2G]  = 'Online';
+    states[Connection.CELL_3G]  = 'Online';
+    states[Connection.CELL_4G]  = 'Online';
+    states[Connection.CELL]     = 'Offline';
+    states[Connection.NONE]     = 'Offline';
+
+    return(states[networkState]);
 }
 
