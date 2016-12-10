@@ -182,6 +182,7 @@ document.addEventListener('deviceready', function() {
 
         populatePosts();
     });
+
 });
 
 /**
@@ -451,6 +452,7 @@ function sharePost(postKey){
             html += "<a href='#' id='email-"+ i +"' class='ui-btn ui-shadow ui-corner-all'>"+contactsList[i].name.formatted+"</a>"
         }
         $("#contact-buttons").html(html);
+        bindEmailButton(postKey);
     },function (error){
         console.log(error);
     },options);
@@ -463,7 +465,22 @@ function bindEmailButton(postKey){
         $("#email-"+i).bind("click",function(){
             var i = this.id.split("-");
             i = i[1];
+            for (var j=0;j<posts.length;j++){
+                if (posts[j].id == postKey){
+                    try{
+                        cordova.plugins.email.open({
+                            to: contactsList[i].emails[0].value,
+                            subject: posts[j].title,
+                            body: posts[j].body,
+                            attachments: ["data:image/jpeg;base64,"+posts[j].img]
+                        });
+                        alert(JSON.stringify(contactsList[i].emails[0].value));
+                    }catch (e){
+                        alert(e)
+                    }
 
+                }
+            }
         });
     }
 }

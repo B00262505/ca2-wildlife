@@ -139,6 +139,15 @@ module.exports = [
         "file": "plugins/cordova-plugin-geolocation/www/PositionError.js",
         "pluginId": "cordova-plugin-geolocation",
         "runs": true
+    },
+    {
+        "id": "cordova-plugin-email-composer.EmailComposer",
+        "file": "plugins/cordova-plugin-email-composer/www/email_composer.js",
+        "pluginId": "cordova-plugin-email-composer",
+        "clobbers": [
+            "cordova.plugins.email",
+            "plugin.email"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -149,7 +158,8 @@ module.exports.metadata =
     "cordova-plugin-network-information": "1.3.0",
     "cordova-plugin-camera": "2.3.0",
     "cordova-plugin-contacts": "2.2.0",
-    "cordova-plugin-geolocation": "2.4.0"
+    "cordova-plugin-geolocation": "2.4.0",
+    "cordova-plugin-email-composer": "0.8.3"
 };
 // BOTTOM OF METADATA
 });
