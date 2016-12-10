@@ -54,7 +54,7 @@ $().ready(function(){
             //set no location
             lat = null;
             lng = null;
-            if (validateInputForm){
+            if (validateInputForm(title,description)){
                 saveSighting(title,description,species,timeDate,lat,lng);
             }
 
@@ -64,7 +64,7 @@ $().ready(function(){
         function geoSuccess(position){
             lat = (position.coords.latitude);
             lng = (position.coords.longitude);
-            if (validateInputForm){
+            if (validateInputForm(title,description)){
                 saveSighting(title,description,species,timeDate,lat,lng);
             }
         }
@@ -77,18 +77,25 @@ $().ready(function(){
 
 });
 
-function validateInputForm(){
-    var title = $("#new-title").val();
-    var description = $("#new-description").val();
-    var gpsEnabled = $("#new-gps-checkbox").is(":checked");
-    var species = $("input[name='new-species-input']:checked").val();
-    var timeDate = new Date();
-
-
+/**
+ * @summary Detemines whether or not the input form is valid. P
+ * Alerts the user if the input form is not valid.
+ * @param title
+ * @param description
+ * @returns {boolean} valid or not valid
+ */
+function validateInputForm(title,description){
+    var image = $("#new-image-image").attr("src");
+    if (image != "img/noimage.jpg" || image != "img/gear.gif"){
+        if (title != "" && description != ""){
+            return true;
+        }
+    }
+    alert("Please enter a title, description and take a photo!");
+    return false;
 }
 
 document.addEventListener('deviceready', function() {
-
     if("indexedDB" in window) {
         console.log("indexedDB supported.");
         indexedDBsupport = true;
@@ -177,7 +184,10 @@ document.addEventListener('deviceready', function() {
     });
 });
 
-
+/**
+ * @summary This function adds markers to the Google Map.
+ * This also creates the info window with the picture, description and title of a post.
+ */
 function addMarkers(){
     if (posts.length > 0){
         for (var i=0; i<posts.length; i++){
@@ -215,6 +225,9 @@ function addMarkers(){
 }
 
 var map,bounds;
+/**
+ * @summary The callback function from the Google Maps API.
+ */
 function initMap(){
     bounds = new google.maps.LatLngBounds();
     map = new google.maps.Map(document.getElementById('map'), {
@@ -223,6 +236,17 @@ function initMap(){
     });
 }
 
+/**
+ * @summary This function saves a sighting to the database.
+ * Handles IndexedDB and WebSQL depending on which is supported by the device.
+ *
+ * @param title
+ * @param description
+ * @param species
+ * @param timeDate
+ * @param lat
+ * @param lng
+ */
 function saveSighting(title,description,species,timeDate,lat,lng){
     if (indexedDBsupport){
         var transaction = db.transaction(["posts"],"readwrite");
@@ -268,6 +292,9 @@ function saveSighting(title,description,species,timeDate,lat,lng){
     }
 }
 
+/**
+ * @summary This was a debug function to empty an indexedDB database.
+ */
 function clearDatabase(){
     // create an object store on the transaction
     var objectStore = transaction.objectStore("posts");
@@ -281,6 +308,11 @@ function clearDatabase(){
     };
 }
 
+
+/**
+ * @summary This function retrieves all the data from the datastore.
+ * It has functionality for IndexedDB if it is supported and WebSQL if it is not.
+ */
 function getPostsList(){
     posts = [];
     $("#sort-select").val("oldToNew");
@@ -339,6 +371,9 @@ function getPostsList(){
     }
 }
 
+/**
+ * @summary This function generates the HTML required for a list item on the home page.
+ */
 function populatePosts(){
     var html = "";
     for (var i = 0; i<posts.length;i++){
@@ -370,6 +405,10 @@ function populatePosts(){
     bindPostsButton();
 }
 
+
+/**
+ * @summary This function gives click functionality to each button on a post.
+ */
 function bindPostsButton(){
     for (var i=0;i<posts.length;i++){
         $("#"+posts[i].id+"-share").bind("click",function(){
@@ -388,6 +427,14 @@ function bindPostsButton(){
 }
 
 var contactsList =[];
+
+/**
+ * @summary This function handles the share button press and displays a list of contacts.
+ *
+ * This function was supposed to make use of the email plugin however that did not work and had to be removed.
+ *
+ * @param postKey
+ */
 function sharePost(postKey){
     var fields = ["*"];
     var options = {multiple: true};
@@ -421,6 +468,15 @@ function bindEmailButton(postKey){
     }
 }
 
+/**
+ * @summary This function uploads the post.
+ *
+ * Uploads the post to http://www.pict.uws.ac.uk/~dwt05/ca2/appImages/addPost.php
+ * This also handles the authentication required to upload to the pict server.
+ * Makes use of the posts key to determine which file is to be uploaded.
+ *
+ * @param postKey
+ */
 function uploadPost(postKey){
     if (checkConnection() == "Online"){
         var url = "http://pict.uws.ac.uk/~dwt05/ca2/appImages/addPost.php";
@@ -464,6 +520,10 @@ function uploadPost(postKey){
     }
 }
 
+/**
+ * @summary This function deletes a post from the database by their key.
+ * @param postKey
+ */
 function deletePost(postKey){
     if (indexedDBsupport){
         var request = db.transaction("posts", "readwrite").objectStore("posts").delete(+postKey);
@@ -472,7 +532,7 @@ function deletePost(postKey){
         };
         request.onsuccess = function(e) {
             console.log("Deleted from database");
-            getPostsList(); //update list
+            getPostsList();
         }
     } else {
         db.transaction(function (tx) {
@@ -481,11 +541,21 @@ function deletePost(postKey){
     }
 }
 
+/**
+ * @summary This function clears the input form and resets the camera link image.
+ */
 function clearInputForm(){
     $("#new-title").val("");
     $("#new-description").val("");
+    var image = document.getElementById('new-image-image');
+    image.src = "img/noimage.jpg";
 }
 
+
+/**
+ * @summary This function checks the connectivity of the users device.
+ * @returns {string} online or offline.
+ */
 function checkConnection() {
     var networkState = navigator.connection.type;
     var states = {};
