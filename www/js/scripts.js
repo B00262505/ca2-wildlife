@@ -25,6 +25,8 @@ $().ready(function(){
         imgBase64 = imageData; //Save global variable accessable by save function
     }
     function camFail(message) {
+        var image = document.getElementById('new-image-image');
+        image.src = "img/noimage.jpg";
         alert('Failed because: ' + message);
     }
     $("#new-clear-form-button").bind("click",function(){
