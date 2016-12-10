@@ -27,4 +27,5 @@
     <plugin name="cordova-plugin-camera" spec="~2.3.0" />
     <plugin name="cordova-plugin-contacts" spec="~2.2.0" />
     <plugin name="cordova-plugin-geolocation" spec="~2.4.0" />
+    <plugin name="cordova-plugin-email-composer" spec="~0.8.3" />
 </widget>
